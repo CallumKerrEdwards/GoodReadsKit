@@ -27,11 +27,7 @@ public struct Book: CustomStringConvertible, Codable {
         self.title = title
         self.goodReadsID = goodReadsID
         self.authors = authors
-        if let seriesTitle: String = seriesTitle {
-            self.seriesTitle = seriesTitle.trim()
-        } else {
-            self.seriesTitle = seriesTitle
-        }
+        self.seriesTitle = seriesTitle
         self.seriesEntry = seriesEntry
         self.isbn = isbn
         self.publicationYear = publicationYear
@@ -46,18 +42,5 @@ public struct Book: CustomStringConvertible, Codable {
 
     public var description: String {
         "\(title) by \(getAuthorString()). GoodReads ID: \(goodReadsID)"
-    }
-}
-
-extension String {
-    func replacingLastOccurrenceOfString(_ searchString: String,
-                                         with replacementString: String) -> String {
-        if let range = self.range(of: searchString,
-                                  options: [.backwards],
-                                  range: nil,
-                                  locale: nil) {
-            return replacingCharacters(in: range, with: replacementString)
-        }
-        return self
     }
 }

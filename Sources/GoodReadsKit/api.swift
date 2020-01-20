@@ -7,7 +7,7 @@
 import Foundation
 import SwiftyXML
 
-open class GoodReads {
+public struct GoodReads {
     let apiKey: String
     let limiter = SecondLimiter()
 
@@ -15,7 +15,7 @@ open class GoodReads {
         self.apiKey = apiKey
     }
 
-    func getBook(title: String, author: String?) throws -> Book {
+    public func getBook(title: String, author: String?) throws -> Book {
         var params = ["title": title]
 
         if let author: String = author {
@@ -26,15 +26,16 @@ open class GoodReads {
 
         var authors: [String] = []
         for author in xml.book.authors.author.xmlList! {
-            authors.append(author[.key("name")].stringValue)
+            authors.append(author[.key("name")].stringValue.trim())
         }
-        return Book(title: xml.book.work.original_title.stringValue,
-                    goodReadsID: xml.book.id.stringValue,
+
+        return Book(title: xml.book.work.original_title.stringValue.trim(),
+                    goodReadsID: xml.book.id.stringValue.trim(),
                     authors: authors,
-                    seriesTitle: xml.book.series_works.series_work.series.title.string,
+                    seriesTitle: cleanString(xml.book.series_works.series_work.series.title.string),
                     seriesEntry: xml.book.series_works.series_work.user_position.int,
-                    isbn: xml.book.isbn.string,
-                    description: xml.book.description.string)
+                    isbn: cleanString(xml.book.isbn.string),
+                    description: cleanString(xml.book.description.string))
     }
 
     internal func getRequest(api: String, parameters: [String: String]) throws -> XML {
@@ -77,6 +78,17 @@ open class GoodReads {
             throw GoodReadsError.apiError("API Failed to execute.")
         }
     }
+}
+
+func cleanString(_ input: String?) -> String? {
+    if let input: String = input {
+        if input.isEmpty {
+            return nil
+        } else {
+            return input.trim()
+        }
+    }
+    return nil
 }
 
 enum GoodReadsError: Error {

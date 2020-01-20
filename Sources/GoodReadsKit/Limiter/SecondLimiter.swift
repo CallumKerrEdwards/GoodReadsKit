@@ -1,11 +1,13 @@
 /**
- Limiter.swift
+ SecondLimiter.swift
  Copyright (c) 2020 Callum Kerr-Edwards
  Licensed under the MIT license.
  */
 
 import Foundation
 
+/// The GoodReads API terms of service dictate that the API is not used more than once a second.
+/// This class is used to ensure that the
 class SecondLimiter {
     let limit: TimeInterval = 1
     private(set) var lastExecutedAt: Date?
@@ -28,15 +30,8 @@ class SecondLimiter {
 
         return executed
     }
-
-    func execute<T>(_ block: () -> T) -> T? {
-        var value: T?
-        execute {
-            value = block()
-        }
-        return value
-    }
-
+    
+    /// Retries the passed function so that even when rate limited it should still run.
     func retry<T>(_ block: () -> T) -> T? {
         var value: T?
         var i = 0
@@ -53,11 +48,5 @@ class SecondLimiter {
             }
         }
         return value
-    }
-
-    func reset() {
-        syncQueue.sync {
-            lastExecutedAt = nil
-        }
     }
 }

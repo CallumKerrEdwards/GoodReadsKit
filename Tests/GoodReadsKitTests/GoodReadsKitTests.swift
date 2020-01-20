@@ -37,7 +37,6 @@ final class GoodReadsKitTests: XCTestCase {
           ],
           "bookDescription" : "Among the ashes of a dying world, an agent of the Commandant finds a letter. It reads: Burn before reading.<br \\/><br \\/>And thus begins an unlikely correspondence between two rival agents hellbent on securing the best possible future for their warring factions. Now, what began as a taunt, a battlefield boast, grows into something more.<br \\/><br \\/>Except discovery of their bond would be death for each of them. There’s still a war going on, after all. And someone has to win that war. That’s how war works. Right?",
           "goodReadsID" : "36516585",
-          "isbn" : "",
           "title" : "This Is How You Lose the Time War"
         }
         """
