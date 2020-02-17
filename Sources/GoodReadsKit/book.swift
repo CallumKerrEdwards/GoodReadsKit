@@ -35,6 +35,18 @@ public struct Book: CustomStringConvertible, Codable {
         self.publicationDay = publicationDay
         self.bookDescription = description
     }
+    
+    public func getDateString() -> String? {
+        guard let year = self.publicationYear else {return nil}
+        if let month = self.publicationMonth {
+            if let day = self.publicationMonth {
+                return "\(year)-\(month)-\(day)"
+            } else {
+                return "\(year)-\(month)"
+            }
+        }
+        return String(year)
+    }
 
     public func getAuthorString() -> String {
         authors.joined(separator: ", ").replacingLastOccurrenceOfString(",", with: " &")
