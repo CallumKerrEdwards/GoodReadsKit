@@ -11,7 +11,7 @@ public struct GoodReads {
     let apiKey: String
     let limiter = SecondLimiter()
 
-    init(apiKey: String) {
+    public init(apiKey: String) {
         self.apiKey = apiKey
     }
 
