@@ -7,16 +7,16 @@
 import Foundation
 
 public struct Book: CustomStringConvertible, Codable {
-    let title: String
-    let goodReadsID: String
-    let authors: [String]
-    let seriesTitle: String?
-    let seriesEntry: Int?
-    let isbn: String?
-    let publicationYear: Int?
-    let publicationMonth: Int?
-    let publicationDay: Int?
-    let bookDescription: String?
+    public let title: String
+    public let goodReadsID: String
+    public let authors: [String]
+    public let seriesTitle: String?
+    public let seriesEntry: Int?
+    public let isbn: String?
+    public let publicationYear: Int?
+    public let publicationMonth: Int?
+    public let publicationDay: Int?
+    public let bookDescription: String?
 
     init(title: String, goodReadsID: String, authors: [String],
          seriesTitle: String? = nil, seriesEntry: Int? = nil,
@@ -33,7 +33,7 @@ public struct Book: CustomStringConvertible, Codable {
         self.publicationYear = publicationYear
         self.publicationMonth = publicationMonth
         self.publicationDay = publicationDay
-        bookDescription = description
+        self.bookDescription = description
     }
 
     public func getAuthorString() -> String {
