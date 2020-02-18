@@ -32,10 +32,13 @@ public struct GoodReads {
         return Book(title: xml.book.work.original_title.stringValue.trim(),
                     goodReadsID: xml.book.id.stringValue.trim(),
                     authors: authors,
-                    seriesTitle: cleanString(xml.book.series_works.series_work.series.title.string),
+                    seriesTitle: xml.book.series_works.series_work.series.title.string?.cleaned,
                     seriesEntry: xml.book.series_works.series_work.user_position.int,
-                    isbn: cleanString(xml.book.isbn.string),
-                    description: cleanString(xml.book.description.string))
+                    isbn: xml.book.isbn.string?.cleaned,
+                    publicationYear: xml.book.work.original_publication_year.int,
+                    publicationMonth: xml.book.work.original_publication_month.int,
+                    publicationDay: xml.book.work.original_publication_day.int,
+                    description: xml.book.description.string?.cleaned)
     }
 
     internal func getRequest(api: String, parameters: [String: String]) throws -> XML {
@@ -80,15 +83,18 @@ public struct GoodReads {
     }
 }
 
-func cleanString(_ input: String?) -> String? {
-    if let input: String = input {
-        if input.isEmpty {
+private extension String {
+    var isBlank: Bool {
+        trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var cleaned: String? {
+        if isBlank {
             return nil
         } else {
-            return input.trim()
+            return trim()
         }
     }
-    return nil
 }
 
 enum GoodReadsError: Error {

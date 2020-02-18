@@ -33,13 +33,13 @@ public struct Book: CustomStringConvertible, Codable {
         self.publicationYear = publicationYear
         self.publicationMonth = publicationMonth
         self.publicationDay = publicationDay
-        self.bookDescription = description
+        bookDescription = description
     }
-    
+
     public func getDateString() -> String? {
-        guard let year = self.publicationYear else {return nil}
-        if let month = self.publicationMonth {
-            if let day = self.publicationMonth {
+        guard let year = publicationYear else { return nil }
+        if let month = publicationMonth {
+            if let day = publicationDay {
                 return "\(year)-\(month)-\(day)"
             } else {
                 return "\(year)-\(month)"

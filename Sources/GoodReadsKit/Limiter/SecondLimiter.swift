@@ -30,7 +30,7 @@ class SecondLimiter {
 
         return executed
     }
-    
+
     /// Retries the passed function so that even when rate limited it should still run.
     func retry<T>(_ block: () -> T) -> T? {
         var value: T?
