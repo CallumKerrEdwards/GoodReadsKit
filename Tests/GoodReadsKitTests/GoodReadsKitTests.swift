@@ -19,6 +19,18 @@ final class GoodReadsKitTests: XCTestCase {
             XCTAssertEqual(oathbringer.seriesEntry!, 3)
             XCTAssertEqual(oathbringer.getDateString()!, "2017-11-14")
 
+            let wor = try api.getBook(title: "Words of Radiance", author: "Sanderson")
+            XCTAssertEqual(wor.description, "Words of Radiance by Brandon Sanderson. GoodReads ID: 17332218")
+            XCTAssertEqual(wor.seriesTitle!, "The Stormlight Archive")
+            XCTAssertEqual(wor.seriesEntry!, 2)
+            XCTAssertEqual(wor.getDateString()!, "2014-03-04")
+
+            let twok = try api.getBook(title: "Way of Kings", author: "Sanderson")
+            XCTAssertEqual(twok.description, "The Way of Kings by Brandon Sanderson. GoodReads ID: 7235533")
+            XCTAssertEqual(twok.seriesTitle!, "The Stormlight Archive")
+            XCTAssertEqual(twok.seriesEntry!, 1)
+            XCTAssertEqual(twok.getDateString()!, "2010-08-31")
+
             let tIHYLtTW = try api.getBook(title: "This Is How You Lose the Time War", author: "Max Gladstone")
             XCTAssertEqual(tIHYLtTW.description, "This Is How You Lose the Time War by Amal El-Mohtar & Max Gladstone. GoodReads ID: 43352954")
         } catch {

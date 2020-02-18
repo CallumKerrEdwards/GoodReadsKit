@@ -40,9 +40,9 @@ public struct Book: CustomStringConvertible, Codable {
         guard let year = publicationYear else { return nil }
         if let month = publicationMonth {
             if let day = publicationDay {
-                return "\(year)-\(month)-\(day)"
+                return "\(year)-\(String(format: "%02d", month))-\(String(format: "%02d", day))"
             } else {
-                return "\(year)-\(month)"
+                return "\(year)-\(String(format: "%02d", month))"
             }
         }
         return String(year)
