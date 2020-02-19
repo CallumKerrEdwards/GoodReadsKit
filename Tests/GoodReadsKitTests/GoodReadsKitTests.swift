@@ -9,7 +9,7 @@ import XCTest
 
 final class GoodReadsKitTests: XCTestCase {
     // Add API key to test
-    let api = GoodReads(apiKey: "dummy-key")
+    let api = GoodReadsRESTAPI(apiKey: "rEFwN8mItCCt6CmxVtpxQ")
 
     func testGoodReadsBooksAPI() {
         do {

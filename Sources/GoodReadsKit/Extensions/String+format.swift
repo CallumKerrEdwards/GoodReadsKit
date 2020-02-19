@@ -7,9 +7,6 @@
 import Foundation
 
 extension String {
-    func trim() -> String {
-        trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-    }
 
     func replacingLastOccurrenceOfString(_ searchString: String,
                                          with replacementString: String) -> String {
@@ -20,5 +17,21 @@ extension String {
             return replacingCharacters(in: range, with: replacementString)
         }
         return self
+    }
+    
+    var isBlank: Bool {
+        trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    
+    var trimmed: String {
+        trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+    }
+
+    var cleaned: String? {
+        if isBlank {
+            return nil
+        } else {
+            return trimmed
+        }
     }
 }

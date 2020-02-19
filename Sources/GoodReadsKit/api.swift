@@ -7,7 +7,12 @@
 import Foundation
 import SwiftyXML
 
-public struct GoodReads {
+public protocol GoodReads {
+    
+    func getBook(title: String, author: String?) throws -> Book
+}
+
+public struct GoodReadsRESTAPI: GoodReads {
     let apiKey: String
     let limiter = SecondLimiter()
 
@@ -26,11 +31,11 @@ public struct GoodReads {
 
         var authors: [String] = []
         for author in xml.book.authors.author.xmlList! {
-            authors.append(author[.key("name")].stringValue.trim())
+            authors.append(author[.key("name")].stringValue.trimmed)
         }
 
-        return Book(title: xml.book.work.original_title.stringValue.trim(),
-                    goodReadsID: xml.book.id.stringValue.trim(),
+        return Book(title: xml.book.work.original_title.stringValue.trimmed,
+                    goodReadsID: xml.book.id.stringValue.trimmed,
                     authors: authors,
                     seriesTitle: xml.book.series_works.series_work.series.title.string?.cleaned,
                     seriesEntry: xml.book.series_works.series_work.user_position.int,
@@ -79,20 +84,6 @@ public struct GoodReads {
             return XML(data: data)
         case .none:
             throw GoodReadsError.apiError("API Failed to execute.")
-        }
-    }
-}
-
-private extension String {
-    var isBlank: Bool {
-        trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-
-    var cleaned: String? {
-        if isBlank {
-            return nil
-        } else {
-            return trim()
         }
     }
 }
