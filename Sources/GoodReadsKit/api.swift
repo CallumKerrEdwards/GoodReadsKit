@@ -26,8 +26,34 @@ public struct GoodReadsRESTAPI: GoodReads {
         if let author: String = author {
             params["author"] = author
         }
-
-        let xml = try getRequest(api: "book/title", parameters: params)
+        return try getBook(apiPath: "book/title", parameters: params)
+    }
+    
+    /// Gets book from GoodReadsID
+    /// - Parameter goodReadsID: GoodReadsID of book
+    public func getBook(goodReadsID: Int) throws -> Book {
+        return try getBook(apiPath: "book/show/\(goodReadsID).xml")
+    }
+    
+    
+    /// Gets book from ISBN
+    /// - Parameter isbn: ISBN (either standard or ISBN13)
+    public func getBook(isbn: String) throws -> Book {
+        var processISBN = isbn
+        processISBN = processISBN.replacingOccurrences(of: "ISBN13", with: "")
+        processISBN = processISBN.replacingOccurrences(of: "ISBN", with: "")
+        guard let number = Int(processISBN) else {
+            throw GoodReadsError.notAValidISBN(isbn)
+        }
+        return try getBook(apiPath: "book/isbn/\(number)")
+    }
+    
+    /// Gets a book's metadata from GoodReads using the API definied at https://www.goodreads.com/api/
+    /// - Parameters:
+    ///   - apiPath: the specific API path
+    ///   - parameters: the optional parameters for the API call
+    func getBook(apiPath: String, parameters: [String: String] = [:]) throws -> Book {
+        let xml = try getRequest(api: apiPath, parameters: parameters)
 
         var authors: [String] = []
         for author in xml.book.authors.author.xmlList! {
@@ -46,7 +72,7 @@ public struct GoodReadsRESTAPI: GoodReads {
                     description: xml.book.description.string?.cleaned)
     }
 
-    internal func getRequest(api: String, parameters: [String: String]) throws -> XML {
+    internal func getRequest(api: String, parameters: [String: String] = [:]) throws -> XML {
         var url = URL(string: "https://www.goodreads.com")!
         url.appendPathComponent(api)
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
@@ -90,5 +116,6 @@ public struct GoodReadsRESTAPI: GoodReads {
 
 enum GoodReadsError: Error {
     case apiError(_ message: String)
+    case notAValidISBN(_ message: String)
     case bookNotFoundError(_ message: String)
 }
