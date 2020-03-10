@@ -9,7 +9,7 @@ import SwiftyXML
 
 public protocol GoodReads {
     
-    func getBook(title: String, author: String?) throws -> Book
+    func getBook(title: String, author: String?) throws -> BookMetadata
 }
 
 public struct GoodReadsRESTAPI: GoodReads {
@@ -20,7 +20,7 @@ public struct GoodReadsRESTAPI: GoodReads {
         self.apiKey = apiKey
     }
 
-    public func getBook(title: String, author: String?) throws -> Book {
+    public func getBook(title: String, author: String?) throws -> BookMetadata {
         var params = ["title": title]
 
         if let author: String = author {
@@ -31,14 +31,14 @@ public struct GoodReadsRESTAPI: GoodReads {
     
     /// Gets book from GoodReadsID
     /// - Parameter goodReadsID: GoodReadsID of book
-    public func getBook(goodReadsID: Int) throws -> Book {
+    public func getBook(goodReadsID: Int) throws -> BookMetadata {
         return try getBook(apiPath: "book/show/\(goodReadsID).xml")
     }
     
     
     /// Gets book from ISBN
     /// - Parameter isbn: ISBN (either standard or ISBN13)
-    public func getBook(isbn: String) throws -> Book {
+    public func getBook(isbn: String) throws -> BookMetadata {
         var processISBN = isbn
         processISBN = processISBN.replacingOccurrences(of: "ISBN13", with: "")
         processISBN = processISBN.replacingOccurrences(of: "ISBN", with: "")
@@ -52,24 +52,57 @@ public struct GoodReadsRESTAPI: GoodReads {
     /// - Parameters:
     ///   - apiPath: the specific API path
     ///   - parameters: the optional parameters for the API call
-    func getBook(apiPath: String, parameters: [String: String] = [:]) throws -> Book {
+    func getBook(apiPath: String, parameters: [String: String] = [:]) throws -> BookMetadata {
         let xml = try getRequest(api: apiPath, parameters: parameters)
 
-        var authors: [String] = []
+        var authors: [Author] = []
+        var narrators: [Author]? = nil
+        var illustrators: [Author]? = nil
         for author in xml.book.authors.author.xmlList! {
-            authors.append(author[.key("name")].stringValue.trimmed)
+            let role = author[.key("role")].stringValue.trimmed
+            let author = Author(fullName: author[.key("name")].stringValue.trimmed)
+            if role.compare("Narrator", options: .caseInsensitive) == .orderedSame {
+                if narrators != nil {
+                    narrators?.append(author)
+                } else {
+                    narrators = [author]
+                }
+            } else if role.compare("Illustrator", options: .caseInsensitive) == .orderedSame {
+                if illustrators != nil {
+                    illustrators?.append(author)
+                } else {
+                    illustrators = [author]
+                }
+            } else {
+                authors.append(author)
+            }
         }
-
-        return Book(title: xml.book.work.original_title.stringValue.trimmed,
-                    goodReadsID: xml.book.id.stringValue.trimmed,
-                    authors: authors,
-                    seriesTitle: xml.book.series_works.series_work.series.title.string?.cleaned,
-                    seriesEntry: xml.book.series_works.series_work.user_position.int,
-                    isbn: xml.book.isbn.string?.cleaned,
-                    publicationYear: xml.book.work.original_publication_year.int,
-                    publicationMonth: xml.book.work.original_publication_month.int,
-                    publicationDay: xml.book.work.original_publication_day.int,
-                    description: xml.book.description.string?.cleaned)
+        
+        var year: Int? = xml.book.work.original_publication_year.int
+        var month: Int? = xml.book.work.original_publication_month.int
+        var day: Int? = xml.book.work.original_publication_day.int
+        if month == nil && day == nil {
+            year = xml.book.publication_year.int
+            month = xml.book.publication_month.int
+            day = xml.book.publication_day.int
+        }
+        
+        var book = BookMetadata(title: xml.book.work.original_title.stringValue.trimmed)
+        
+        book.goodReadsID = xml.book.id.stringValue.trimmed
+        book.authors = authors
+        book.narrators = narrators
+        book.illustrators = illustrators
+        if let seriesTitle = xml.book.series_works.series_work.series.title.string?.cleaned,
+            let seriesEntry = xml.book.series_works.series_work.user_position.double {
+            book.series = Series(title: seriesTitle, entry: seriesEntry)
+        }
+        book.isbn = xml.book.isbn.string?.cleaned
+        if let year = year {
+            book.publicationDate = PublicationDate(year: year, month: month, day: day)
+        }
+        book.summary = xml.book.description.string?.cleaned
+        return book
     }
 
     internal func getRequest(api: String, parameters: [String: String] = [:]) throws -> XML {
