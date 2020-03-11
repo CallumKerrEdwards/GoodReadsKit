@@ -97,10 +97,10 @@ public struct GoodReadsRESTAPI: GoodReads {
             let seriesEntry = xml.book.series_works.series_work.user_position.double {
             book.series = Series(title: seriesTitle, entry: seriesEntry)
         }
-        if let isbn = xml.book.isbn.string {
-            book.isbn = isbn.cleaned
-        } else if let isbn13 = xml.book.isbn13.string {
-            book.isbn = isbn13.cleaned
+        if !(xml.book.isbn.string?.cleaned?.isBlank ?? true) {
+            book.isbn = xml.book.isbn.string?.cleaned
+        } else if !(xml.book.isbn13.string?.cleaned?.isBlank ?? true) {
+            book.isbn = xml.book.isbn13.string?.cleaned
         }
         
         if let year = year {
