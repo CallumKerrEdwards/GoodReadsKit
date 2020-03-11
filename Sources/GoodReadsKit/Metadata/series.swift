@@ -22,7 +22,5 @@ public struct Series: Codable, Equatable, Hashable {
         } else {
             return "Book \(entry) of \(title)"
         }
-        
-        
     }
 }
